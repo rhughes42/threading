@@ -9,7 +9,9 @@ internal class Program {
 		int numberOfTasks = 10000; // Number of tasks to start.
 
 		Stopwatch sw = Stopwatch.StartNew( );
-		Console.WriteLine( $"Starting {numberOfTasks} tasks in {Environment.ProcessId}." );
+		Console.WriteLine( $"Starting {numberOfTasks} tasks on PID {Environment.ProcessId}..." );
+		Console.WriteLine( $"Press any key to continue." );
+		Console.ReadKey( );
 
 		Task[] tasks = new Task[ numberOfTasks ];
 		ConcurrentDictionary<int, int> threadRuns = new( );
@@ -18,6 +20,8 @@ internal class Program {
 			int taskNumber = i;
 			tasks[ i ] = Task.Run( ( ) => {
 				int Id = Environment.CurrentManagedThreadId;
+				// Set the priority of the thread.
+				Thread.CurrentThread.Priority = ThreadPriority.Highest;
 				Console.WriteLine( $"[{sw.ElapsedMilliseconds}ms]: Task {taskNumber} executing on {Id}." );
 
 				// If the thread has not been run before, add it to the dictionary. Otherwise,
@@ -41,6 +45,10 @@ internal class Program {
 		foreach ( KeyValuePair<int, double> item in freq ) {
 			Console.WriteLine( $"Thread {item.Key} handles {item.Value}% of the tasks." );
 		}
+
+		// Wait for the user to press a key before exiting.
+		Console.WriteLine( "Press any key to exit." );
+		Console.ReadKey( );
 	}
 
 	/// <summary>
